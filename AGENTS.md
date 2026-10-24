@@ -56,7 +56,8 @@ and the skills never drift apart. The relevant ones:
   same way.
 - A difference without a reason recorded under "Deviations from the shared workflow"
   (here, or in the generated AGENTS.md) is drift: fix it.
-- AGENTS.md, generated or this repository's own, does not restate a rule a skill owns
+- AGENTS.md, generated or this repository's own, does not restate the rules the
+  `git-commit` and `git-branch` skills own
   ([ADR 0012](docs/decisions/0012-agent-rules-owned-by-skills.md)).
 
 ## Architecture

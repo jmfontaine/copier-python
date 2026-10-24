@@ -7,17 +7,20 @@
 
 ## Context
 
-`AGENTS.md` repeated two rules that the `git-commit` and `git-branch` skills in
+`AGENTS.md` repeated rules that the `git-commit` and `git-branch` skills in
 [agent-skills](https://github.com/jmfontaine/agent-skills) already give agents: the
-Conventional Commits pull request titles of ADR 0007, with signed branch commits, and
-never running `git -C`. Two copies of a rule drift apart, and a project copying the old
-text then contradicts the skills.
+Conventional Commits pull request titles of ADR 0007, with signed branch commits, and a
+rule against `git -C`. The copies had already drifted: `AGENTS.md` banned `git -C`
+outright, while the skills forbid `git -C <path>` only when the current directory is
+already the repository root. A project copying the old text contradicts the skills
+whenever they change.
 
 ## Decision
 
-`AGENTS.md`, in generated projects and in this repository, does not restate a rule the
-skills own. It keeps what is specific to the project. The decision of ADR 0007 stands;
-only where it is written changes.
+`AGENTS.md`, in generated projects and in this repository, does not restate the rules
+the `git-commit` and `git-branch` skills own. The skills' wording applies, including
+their narrower `git -C` rule. The decision of ADR 0007 stands; only where it is written
+changes.
 
 ## Rationale and alternatives
 
@@ -27,5 +30,7 @@ only where it is written changes.
 ## Consequences
 
 People and agents without the skills find the title rule in the pull request template
-and, for packages, in `CONTRIBUTING.md`. Nothing outside the skills states the `git -C`
-rule.
+and, for packages, in `CONTRIBUTING.md`. Signed commits are enforced by the
+signed-commit ruleset of the `github-workflow` skill's repository setup; for packages,
+`CONTRIBUTING.md` also asks contributors to sign. Nothing outside the skills states the
+`git -C` rule.
