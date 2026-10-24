@@ -64,16 +64,9 @@ people's text, such as {% if pkg %}`LICENSE.txt` or {% endif %}vendored code, as
 - Dependency groups: `dev` holds the tools and includes `test`, which holds only what
   the tests import. CI installs `test` on its own, so a test cannot lean on a `dev` tool
 {%- endif %}
-- Pull requests are squash-merged, so the pull request title is the commit on
-  `main`{% if pkg %} and feeds the release notes{% endif %}. It follows
-  [Conventional Commits](https://www.conventionalcommits.org/) without a scope,
-  `<type>: <description>`, with one of `feat`, `fix`, `perf`, `refactor`, `docs`,
-  `test`, `build`, `ci` or `chore`, and `<type>!:` for a breaking change. Commits on
-  a branch are free-form but always signed (`git commit -S`)
 - Workarounds that are knowingly less than ideal carry a `KLUDGE:` comment
   stating what is wrong and what removes it. Grep for `KLUDGE` before changing
   one; do not add one without a removal condition
-- Run `git` commands directly, never with `git -C`
 
 ## Architecture
 
