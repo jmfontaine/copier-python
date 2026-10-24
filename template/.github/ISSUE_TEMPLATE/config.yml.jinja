@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+{#- Ideas go to Discussions on a public repository only. A package on PyPI is public;
+    an application is assumed private, and keeps its ideas outside GitHub. #}
+{%- if project_kind == 'package' %}
+contact_links:
+  - name: Ideas and questions
+    url: https://github.com/{{ github_owner }}/{{ project_name }}/discussions/categories/ideas
+    about: Share an idea that is not ready to become an issue, or ask a question.
+{%- endif %}

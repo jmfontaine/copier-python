@@ -1,0 +1,11 @@
+[global]
+line-length = 88
+# The template's own Markdown is checked in the projects it renders.
+exclude = ["template"]
+
+[MD013]
+reflow = true
+
+# A pull request template is a body; GitHub holds the title separately.
+[per-file-ignores]
+".github/pull_request_template.md" = ["MD041"]

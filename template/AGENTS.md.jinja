@@ -1,0 +1,182 @@
+{%- set pkg = project_kind == 'package' -%}
+{%- set shape = ('CLI' if cli else 'library') if pkg else ('CLI application' if cli else 'application') -%}
+# AGENTS.md
+
+Guidance for coding agents working in this repository.
+
+## Project
+
+{{ project_name }}: {{ description }}
+
+## Commands
+
+Task runner is [just](https://github.com/casey/just); every recipe runs its tool
+through [uv](https://docs.astral.sh/uv/).
+
+```bash
+just setup              # Install deps + pre-commit hooks (hooks: main checkout only)
+just test               # Run pytest with coverage
+just test <path>        # Run one test file or directory
+just format             # ruff format + pyproject-fmt + rumdl fmt (Markdown)
+just lint-fix           # ruff check --fix + rumdl check --fix
+just type-check         # ty check
+{%- if pkg %}
+just verify-types       # Public API type completeness; fails until the first export
+{%- endif %}
+just deps-unused        # deptry src
+just spell              # cspell against cspell.json
+just qa                 # All checks: every pre-commit hook{% if pkg %}, then verify-types{% endif %}
+just deps-update        # Update deps to latest versions
+{%- if pkg %}
+just changelog-preview  # Release notes for unreleased commits
+just release-prepare    # Maintainers only: open the PR that sets the release version
+just release            # Maintainers only: tag the merged release and publish it
+just release-next       # Maintainers only: open the PR for the next development version
+{%- endif %}
+```
+
+Run a single test: `just test tests/test_version.py -k matches_installed_metadata`
+
+Before finishing a change, run `just format && just lint-fix && just qa && just test`.
+`just qa` runs pre-commit, which sees only files git tracks: `git add` new files
+first.
+
+## Language
+
+Write US English in everything you write for this project: code comments,
+docstrings, error messages, identifiers, tests, documentation, commit messages
+and replies. That means `-ize` and `-yze` (`normalize`, `analyze`), `-or`
+(`behavior`, `honor`), `-er` (`center`), a single `l` before a suffix
+(`labeling`, `canceled`), and `license` as both noun and verb. Leave other
+people's text, such as {% if pkg %}`LICENSE.txt` or {% endif %}vendored code, as it is.
+
+## Conventions
+
+- Python {{ python_min }}+, developed on the version in `.python-version`; ruff
+  enforces a line length of 88
+- ty is the type checker{% if pkg %}; pyright runs only for `--verifytypes`. The
+  package ships `py.typed` (PEP 561), so the public API stays fully typed{% endif %}
+{%- if pkg %}
+- Dependency groups: `dev` holds the tools and includes `test`, which holds only
+  what the tests import. CI installs `test` on its own, next to the built wheel, so a
+  test cannot lean on a `dev` tool
+{%- else %}
+- Dependency groups: `dev` holds the tools and includes `test`, which holds only what
+  the tests import. CI installs `test` on its own, so a test cannot lean on a `dev` tool
+{%- endif %}
+- Pull requests are squash-merged, so the pull request title is the commit on
+  `main`{% if pkg %} and feeds the release notes{% endif %}. It follows
+  [Conventional Commits](https://www.conventionalcommits.org/) without a scope,
+  `<type>: <description>`, with one of `feat`, `fix`, `perf`, `refactor`, `docs`,
+  `test`, `build`, `ci` or `chore`, and `<type>!:` for a breaking change. Commits on
+  a branch are free-form but always signed (`git commit -S`)
+- Workarounds that are knowingly less than ideal carry a `KLUDGE:` comment
+  stating what is wrong and what removes it. Grep for `KLUDGE` before changing
+  one; do not add one without a removal condition
+- Run `git` commands directly, never with `git -C`
+
+## Architecture
+
+What future work on {{ project_name }} may assume today. Commands and day-to-day
+conventions are above{% if pkg %}; the process for contributors is in
+[CONTRIBUTING.md](CONTRIBUTING.md){% endif %}.
+
+### Shape
+
+{% if pkg -%}
+A Python {{ shape }} published to PyPI.
+{%- else -%}
+A Python {{ shape }}, never published: the `Private :: Do Not Upload` classifier
+makes PyPI reject any upload.
+{%- endif %}
+{%- if cli %} The `{{ project_name }}` console script calls
+`{{ package_name }}.cli:main`.
+{%- endif %}
+
+### Language, runtime, and tooling
+
+- Python {{ python_min }}+ (`requires-python`); developed on the version in
+  `.python-version`
+- uv manages dependencies and environments; `uv.lock` is committed, and uv_build
+  builds the {% if pkg %}distributions{% else %}package{% endif %}
+- just is the task runner
+- ruff formats and lints; pyproject-fmt formats `pyproject.toml`; rumdl formats and
+  lints Markdown, configured in `.rumdl.toml`
+- ty checks types{% if pkg %}; pyright `--verifytypes` checks that the public API is fully
+  typed{% endif %}
+- deptry reports unused and undeclared dependencies
+- cspell checks spelling against `cspell.json`; actionlint checks the workflows
+- pre-commit holds the one list of checks, run on every commit, by `just qa` and by
+  CI. The tools the justfile also runs on their own come from `uv.lock` through
+  `uv run`; the general file checks, actionlint and cspell are pinned in
+  `.pre-commit-config.yaml`
+
+### Structure
+
+- `src/{{ package_name }}/`: the package (src layout)
+- `tests/`: the pytest suite
+{%- if pkg %}
+- `scripts/`: distribution checks that CI runs
+{%- endif %}
+- `docs/`: durable project documents, when there are any
+
+### Testing
+
+pytest with coverage (`just test`).
+{%- if pkg %} CI runs the suite:
+
+- on every supported Python, {% if python_min == python_max %}{{ python_min }}{% else %}{{ python_min }} to {{ python_max }}{% endif %}
+- against the oldest dependency versions `pyproject.toml` allows, with deprecations
+  fatal
+- against the built wheel, installed into a clean environment
+{%- else %} CI runs it on the development Python.
+{%- endif %}
+
+{%- if pkg %}
+
+### Distribution
+
+- Wheel and sdist built once by CI and checked by `scripts/check_distributions.py`
+  and `twine check --strict`; the same files are published, never rebuilt
+- Published to PyPI through trusted publishing from `.github/workflows/publish.yml`
+  when a `vX.Y.Z` tag on `main` is pushed; `just release` creates it signed
+- Between releases `main` carries a development version, `X.Y.Z.devN`, which sorts
+  below `X.Y.Z`
+- Release notes generated by git-cliff from the pull request titles on `main`
+- License: Apache-2.0
+{%- else %}
+
+### Distribution
+
+None.
+{%- endif %}
+
+### CI
+
+- `.github/workflows/ci.yml` runs on pushes to `main` and on every pull request:
+  every pre-commit hook{% if pkg %} and `--verifytypes`{% endif %}, then the tests{% if pkg %}, then
+  builds and install-tests the distributions{% endif %}. Actions are pinned to commit
+  SHAs, and no checkout keeps its token
+- Dependabot opens weekly grouped updates for GitHub Actions and `uv.lock`, with
+  `build:` commit messages and the `dependencies` and `build` labels; it moves the
+  lock only, never the minimum versions in `pyproject.toml`
+
+### Agent support
+
+Coding agents are expected contributors. They follow this file.{% if pkg %} Agents
+never release.{% endif %}
+{%- if pkg %}
+
+## Releasing
+
+**Agents never release.** Do not run `just release-prepare`, `just release` or
+`just release-next`, create or push a `v*` tag (pushing one publishes to PyPI),
+create a GitHub release, or interact with PyPI. Finish the work, run the checks
+above, report, and stop.
+
+The process for maintainers is in [CONTRIBUTING.md](CONTRIBUTING.md#releasing).
+{%- endif %}
+
+## Deviations from the shared workflow
+
+None.

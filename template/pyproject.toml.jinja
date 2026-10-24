@@ -1,0 +1,124 @@
+{%- set pkg = project_kind == 'package' -%}
+{%- set min_minor = python_min.split('.')[1] | int -%}
+{%- set max_minor = python_max.split('.')[1] | int -%}
+[build-system]
+build-backend = "uv_build"
+requires = [ "uv-build>=0.13,<0.14" ]
+
+[project]
+name = "{{ project_name }}"
+version = "{% if pkg %}0.1.0.dev0{% else %}0.1.0{% endif %}"
+description = "{{ description }}"
+readme = "README.md"
+{%- if pkg %}
+license = "Apache-2.0"
+license-files = [ "LICENSE.txt" ]
+{%- endif %}
+authors = [ { name = "{{ author_name }}", email = "{{ author_email }}" } ]
+requires-python = ">={{ python_min }}"
+classifiers = [
+{%- if not pkg %}
+  # PyPI rejects any upload carrying this classifier.
+  "Private :: Do Not Upload",
+{%- endif %}
+  "Programming Language :: Python :: 3 :: Only",
+{%- for minor in range(min_minor, max_minor + 1) %}
+  "Programming Language :: Python :: 3.{{ minor }}",
+{%- endfor %}
+{%- if pkg %}
+  "Typing :: Typed",
+{%- endif %}
+]
+dependencies = []
+{%- if pkg %}
+urls.Homepage = "https://github.com/{{ github_owner }}/{{ project_name }}"
+urls.Issues = "https://github.com/{{ github_owner }}/{{ project_name }}/issues"
+urls.Repository = "https://github.com/{{ github_owner }}/{{ project_name }}"
+{%- endif %}
+{%- if cli %}
+scripts.{{ project_name }} = "{{ package_name }}.cli:main"
+{%- endif %}
+
+[dependency-groups]
+dev = [
+  "deptry>=0.25",
+{%- if pkg %}
+  "git-cliff>=2.14",
+{%- endif %}
+  "pre-commit>=4.6",
+  "pyproject-fmt>=2.30",
+{%- if pkg %}
+  "pyright>=1.1.414",
+{%- endif %}
+  "ruff>=0.17",
+  "rumdl>=0.3",
+  "ty>=0.0.86",
+  { include-group = "test" },
+]
+{%- if pkg %}
+# CI installs this group on its own next to the built wheel, to run the suite
+# against the installed package; keep it to what the tests import.
+{%- endif %}
+test = [
+  "pytest>=9.1",
+  "pytest-cov>=7.1",
+]
+{%- if package_name != project_name | replace('-', '_') %}
+
+[tool.uv]
+# uv_build otherwise expects the distribution name with underscores as the module.
+build-backend.module-name = "{{ package_name }}"
+{%- endif %}
+
+[tool.ruff]
+line-length = 88
+lint.select = [
+  "A",     # flake8-builtins
+  "ASYNC", # flake8-async
+  "B",     # flake8-bugbear
+  "BLE",   # flake8-blind-except
+  "C4",    # flake8-comprehensions
+  "DTZ",   # flake8-datetimez
+  "E",     # pycodestyle errors
+  "EXE",   # flake8-executable
+  "F",     # pyflakes
+  "FLY",   # flynt
+  "FURB",  # refurb
+  "G",     # flake8-logging-format
+  "I",     # isort
+  "ISC",   # flake8-implicit-str-concat
+  "LOG",   # flake8-logging
+  "N",     # pep8-naming
+  "PERF",  # perflint
+  "PGH",   # pygrep-hooks
+  "PIE",   # flake8-pie
+  "PLE",   # pylint errors
+  "PLW",   # pylint warnings
+  "PT",    # flake8-pytest-style
+  "PTH",   # flake8-use-pathlib
+  "RET",   # flake8-return
+  "RSE",   # flake8-raise
+  "RUF",   # ruff-specific rules
+  "SIM",   # flake8-simplify
+  "T10",   # flake8-debugger
+  "UP",    # pyupgrade
+  "W",     # pycodestyle warnings
+]
+
+[tool.pyproject-fmt]
+column_width = 88
+max_supported_python = "{{ python_max }}"
+
+[tool.pytest]
+# Python ignores ResourceWarning by default, so a leaked file or connection
+# would otherwise pass unnoticed.
+filterwarnings = [
+  "error::ResourceWarning",
+  "error::pytest.PytestUnraisableExceptionWarning",
+]
+testpaths = [ "tests" ]
+
+[tool.coverage]
+run.source = [ "{{ package_name }}" ]
+report.skip_empty = true
+report.show_missing = true

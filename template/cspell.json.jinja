@@ -1,0 +1,19 @@
+{%- set words = [
+  'capsys', 'datetimez', 'deptry', 'docstrings', 'elif', 'endfor', 'esac', 'filterwarnings',
+  'flynt', 'Fontaine', 'furb', 'ignoreexternal', 'isort', 'jmfontaine', 'moxieforge',
+  'pathlib', 'perflint', 'pipefail', 'purelib', 'pycache', 'pycodestyle', 'pyflakes',
+  'pygrep', 'pylint', 'pypa', 'pypi', 'pyproject', 'pytest', 'pyupgrade', 'refurb',
+  'relock', 'rumdl', 'scopeless', 'sdist', 'sdists', 'striptags', 'testpaths',
+  'unraisable', 'venv', 'verifytypes', 'worktrees',
+] + project_name.split('-') + package_name.split('_') + author_name.replace('-', ' ').split() -%}
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en",
+  "ignorePaths": [".copier-answers.yml"],
+  "words": [
+{%- for word in words | unique | sort(case_sensitive=false) %}
+    "{{ word }}"{% if not loop.last %},{% endif %}
+{%- endfor %}
+  ]
+}

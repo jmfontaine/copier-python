@@ -1,0 +1,112 @@
+_min_copier_version: "9.4"
+_subdirectory: template
+# Seeded once, then owned by the project: `copier update` leaves them alone while they
+# exist, and recreates one only if it was deleted.
+_skip_if_exists:
+  - cspell.json
+  - README.md
+  - src/**
+  - tests/**
+_message_after_copy: |
+  Created {{ project_name }}. Next:
+
+    cd {{ _copier_conf.dst_path }}
+    git init -b main
+    just setup
+    git add -A && git commit -S -m "That's one small step for mankind, one giant leap for a man"
+
+  Pull later template changes with `copier update`.
+  {%- if project_kind == 'package' and not cli %}
+
+  `just qa` and the CI lint job fail until the package exports its first public
+  symbol: pyright `--verifytypes` scores an empty public API at 0%.
+  {%- endif %}
+
+# Template-wide constants. `when: false` keeps them out of .copier-answers.yml,
+# so changing them here reaches every project on its next `copier update`.
+python_dev:
+  type: str
+  default: "3.14"
+  when: false
+
+python_max:
+  type: str
+  default: "3.15"
+  when: false
+
+project_kind:
+  type: str
+  help: What kind of project is this?
+  choices:
+    Package published to PyPI: package
+    Application, never published: app
+  default: package
+
+cli:
+  type: bool
+  help: Does it install a command-line entry point?
+  default: false
+
+project_name:
+  type: str
+  help: Distribution name (lowercase, hyphen-separated)
+  validator: >-
+    {% if not (project_name | regex_search('^[a-z][a-z0-9]*(-[a-z0-9]+)*$')) %}
+    Use lowercase letters, digits and single hyphens, starting with a letter.
+    {% endif %}
+
+package_name:
+  type: str
+  help: Import name
+  default: "{{ project_name | replace('-', '_') }}"
+  validator: >-
+    {% if not (package_name | regex_search('^[a-z][a-z0-9_]*$')) %}
+    Use lowercase letters, digits and underscores, starting with a letter.
+    {% endif %}
+
+description:
+  type: str
+  help: One-line description, 80 characters at most
+  # It lands in TOML strings and in the package docstring, hence the limits.
+  validator: >-
+    {% if not description %}A description is required.
+    {% elif description | length > 80 %}Keep it to 80 characters.
+    {% elif '"' in description or '\\' in description %}Avoid " and \.
+    {% endif %}
+
+github_owner:
+  type: str
+  help: GitHub owner of the repository
+  choices:
+    - jmfontaine
+    - moxieforge
+  default: jmfontaine
+  # Only package files (URLs, release notes, contributing guide) use it.
+  when: "{{ project_kind == 'package' }}"
+
+author_name:
+  type: str
+  help: Author name, for pyproject.toml
+  default: Jean-Marc Fontaine
+
+author_email:
+  type: str
+  help: Author email, for pyproject.toml
+  default: jm@jmfontaine.net
+
+python_min:
+  type: str
+  help: Oldest supported Python
+  choices:
+    - "3.11"
+    - "3.12"
+    - "3.13"
+    - "3.14"
+    - "3.15"
+  default: "{% if project_kind == 'package' %}3.11{% else %}{{ python_dev }}{% endif %}"
+
+copyright_year:
+  type: str
+  help: Year of first publication, for LICENSE.txt
+  default: "{{ '%Y' | strftime }}"
+  when: "{{ project_kind == 'package' }}"

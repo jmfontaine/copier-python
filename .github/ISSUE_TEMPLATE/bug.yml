@@ -1,0 +1,32 @@
+name: Bug report
+description: The template renders something wrong, or a generated project fails its checks
+labels: ["triage"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What happened, and what you were trying to do. Include the full error message.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: The copier command and answers that reproduce the problem, and the check that fails. Anyone can use it to confirm the fix.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: What should happen instead.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Copier version, operating system, and the template commit (`_commit` in `.copier-answers.yml`).
+    validations:
+      required: true

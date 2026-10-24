@@ -1,0 +1,54 @@
+{%- set pkg = project_kind == 'package' -%}
+# {{ project_name }}
+
+{{ description }}
+{%- if pkg %}
+
+## Installation
+
+```bash
+{%- if cli %}
+uv tool install {{ project_name }}
+{%- else %}
+uv add {{ project_name }}
+{%- endif %}
+```
+
+or `pip install {{ project_name }}`.
+{%- endif %}
+{%- if cli %}
+
+## Usage
+
+```bash
+{{ project_name }} --help
+```
+{%- endif %}
+
+## Development
+
+{% if pkg -%}
+See [CONTRIBUTING.md][contributing]. In short, with [uv][uv] and [just][just] installed:
+{%- else -%}
+With [uv][uv] and [just][just] installed:
+{%- endif %}
+
+```bash
+just setup  # Install dependencies and git hooks
+just qa     # Run all checks
+just test   # Run the tests
+```
+{%- if pkg %}
+
+## License
+
+[Apache License 2.0][license]
+{%- endif %}
+
+{% if pkg -%}
+<!-- Absolute URLs, so the links also work on PyPI. -->
+[contributing]: https://github.com/{{ github_owner }}/{{ project_name }}/blob/main/CONTRIBUTING.md
+[license]: https://github.com/{{ github_owner }}/{{ project_name }}/blob/main/LICENSE.txt
+{% endif -%}
+[uv]: https://docs.astral.sh/uv/
+[just]: https://github.com/casey/just
