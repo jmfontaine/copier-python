@@ -70,7 +70,8 @@ The project's `AGENTS.md` describes its commands and conventions. For packages,
 The template provides the files. The repository settings come from the
 [`github-workflow` skill](https://github.com/jmfontaine/agent-skills/blob/main/skills/github-workflow/references/repository-setup.md):
 squash merges only, the rulesets, the label set, and Discussions with an "Ideas"
-category for public repositories.
+category for public repositories. The one required check is `CI passed`, the summary
+job of the CI workflow.
 
 A package needs two more things before its first release, described in its
 `CONTRIBUTING.md`: a GitHub environment named `pypi`, and a trusted publisher on PyPI.

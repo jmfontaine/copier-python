@@ -98,6 +98,10 @@ pushes to `main` and on pull requests. Actions are pinned to commit SHAs
 `uv.lock` current. It does not see the `.jinja` workflows under `template/`: bump
 those by hand.
 
+The `CI passed` job needs every other job of the workflow and is the one required
+check ([ADR 0013](docs/decisions/0013-one-required-ci-check.md)); a new job joins its
+`needs`, in this workflow and in the template's.
+
 ## Shared workflow
 
 This repository follows the shared workflow: the `github-workflow` skill's repository

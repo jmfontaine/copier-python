@@ -188,3 +188,16 @@ jobs:
       - run: uv sync --locked --no-dev --group test
       - run: uv run --no-sync pytest --cov
 {%- endif %}
+
+  # The one check a ruleset requires, so adding or renaming a job never needs a
+  # ruleset change. Keep every other job in `needs`. It runs whatever the others
+  # did, and fails when one failed or was canceled.
+  ci-passed:
+    name: CI passed
+    needs: [lint, test{% if pkg %}, build, wheel, sdist{% endif %}]
+    if: always()
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Fail when a job failed or was canceled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
