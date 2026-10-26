@@ -172,6 +172,16 @@ above, report, and stop.
 The process for maintainers is in [CONTRIBUTING.md](CONTRIBUTING.md#releasing).
 {%- endif %}
 
-## Deviations from the shared workflow
+## Shared workflow
+
+This repository follows the shared workflow: the `github-workflow` skill's repository
+setup describes its GitHub settings, rulesets, labels and templates. Those settings are
+managed as code in the `infra` repository; change them there, never with `gh api` or
+the GitHub web UI.
+
+It is a pull-request repository: work happens on a branch and lands through a pull
+request.
+
+### Deviations from the shared workflow
 
 None.
