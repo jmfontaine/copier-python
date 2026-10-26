@@ -44,7 +44,7 @@ and the skills never drift apart. The relevant ones:
 
 | Skill | What it governs here |
 | --- | --- |
-| [`github-workflow`](https://github.com/jmfontaine/agent-skills/tree/main/skills/github-workflow) | Issue forms, the pull request template, Dependabot, labels, the Discussions link, the "Deviations from the shared workflow" section; `references/repository-setup.md` is the checklist |
+| [`github-workflow`](https://github.com/jmfontaine/agent-skills/tree/main/skills/github-workflow) | Issue forms, the pull request template, Dependabot, labels, the Discussions link, the "Shared workflow" section; `references/repository-setup.md` is the checklist |
 | [`git-branch`](https://github.com/jmfontaine/agent-skills/tree/main/skills/git-branch) | Branch names the release recipes create |
 | [`git-commit`](https://github.com/jmfontaine/agent-skills/tree/main/skills/git-commit) | Pull request titles, signed commits, the first-commit message, where cSpell words live |
 | [`product-development-system`](https://github.com/jmfontaine/agent-skills/tree/main/skills/product-development-system) | The Architecture section of the generated AGENTS.md, and where `docs/` artifacts go |
@@ -98,7 +98,17 @@ pushes to `main` and on pull requests. Actions are pinned to commit SHAs
 `uv.lock` current. It does not see the `.jinja` workflows under `template/`: bump
 those by hand.
 
-## Deviations from the shared workflow
+## Shared workflow
+
+This repository follows the shared workflow: the `github-workflow` skill's repository
+setup describes its GitHub settings, rulesets, labels and templates. Those settings are
+managed as code in the `infra` repository; change them there, never with `gh api` or
+the GitHub web UI.
+
+It is a pull-request repository: work happens on a branch and lands through a pull
+request.
+
+### Deviations from the shared workflow
 
 - No releases, so no tags and no milestones: `copier update` takes a project to the
   template's latest `main`.
