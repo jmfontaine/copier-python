@@ -150,6 +150,8 @@ None.
   every pre-commit hook{% if pkg %} and `--verifytypes`{% endif %}, then the tests{% if pkg %}, then
   builds and install-tests the distributions{% endif %}. Actions are pinned to commit
   SHAs, and no checkout keeps its token
+- The `CI passed` job needs every other job and fails when one failed or was canceled.
+  It is the one required check: a new job joins its `needs`
 - Dependabot opens weekly grouped updates for GitHub Actions and `uv.lock`, with
   `build:` commit messages and the `dependencies` and `build` labels; it moves the
   lock only, never the minimum versions in `pyproject.toml`
