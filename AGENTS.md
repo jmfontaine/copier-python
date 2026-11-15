@@ -53,7 +53,7 @@ and the skills never drift apart. The relevant ones:
 
 | Skill | What it governs here |
 | --- | --- |
-| [`github-workflow`](https://github.com/jmfontaine/agent-skills/tree/main/skills/github-workflow) | Issue forms, the pull request template, Dependabot, labels, the Discussions link, the "Shared workflow" section; `references/repository-setup.md` is the checklist |
+| [`github-workflow`](https://github.com/jmfontaine/agent-skills/tree/main/skills/github-workflow) | Issue forms, the pull request template, Dependabot, labels, the Discussions link, the "Shared Workflow" section; `references/repository-setup.md` is the checklist |
 | [`git-branch`](https://github.com/jmfontaine/agent-skills/tree/main/skills/git-branch) | Branch names the release recipes create |
 | [`git-commit`](https://github.com/jmfontaine/agent-skills/tree/main/skills/git-commit) | Pull request titles, signed commits, the first-commit message, where cSpell words live |
 | [`product-development-system`](https://github.com/jmfontaine/agent-skills/tree/main/skills/product-development-system) | The Architecture section of the generated AGENTS.md, and where `docs/` artifacts go |
