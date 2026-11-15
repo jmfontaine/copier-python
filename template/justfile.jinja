@@ -198,8 +198,9 @@ _version-pr branch version subject body:
     git add pyproject.toml uv.lock
     git commit --quiet -S -m "$subject" -m "$body"
     git push --quiet --set-upstream origin "$branch"
-    # The sections of .github/pull_request_template.md that apply; there is no issue to close.
-    pr_body=$(printf '## Summary\n\n%s\n\n## Verification\n\n`uv version --no-sync %s` set the version in pyproject.toml and uv.lock; CI checks the result on this pull request.\n' "$body" "$version")
+    # The parts of .github/pull_request_template.md that apply: there is no issue to
+    # close and nothing for Agent notes.
+    pr_body=$(printf '%s\n\n## Decisions\n\nNone.\n\n## Verification\n\n`uv version --no-sync %s` set the version in pyproject.toml and uv.lock; CI checks the result on this pull request.\n' "$body" "$version")
     gh pr create --base main --head "$branch" --title "$subject" --body "$pr_body"
     git switch --quiet main
 {%- endif %}
