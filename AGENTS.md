@@ -63,7 +63,7 @@ and the skills never drift apart. The relevant ones:
   justfile or `_message_after_copy` against these skills.
 - When a skill changes, update the template, and this repository's own files, in the
   same way.
-- A difference without a reason recorded under "Deviations from the shared workflow"
+- A difference without a reason recorded under "Deviations From the Shared Workflow"
   (here, or in the generated AGENTS.md) is drift: fix it.
 - AGENTS.md, generated or this repository's own, does not restate the rules the
   `git-commit` and `git-branch` skills own
@@ -111,7 +111,7 @@ The `CI passed` job needs every other job of the workflow and is the one require
 check ([ADR 0013](docs/decisions/0013-one-required-ci-check.md)); a new job joins its
 `needs`, in this workflow and in the template's.
 
-## Shared workflow
+## Shared Workflow
 
 This repository follows the shared workflow: the `github-workflow` skill's repository
 setup describes its GitHub settings, rulesets, labels and templates. Those settings are
@@ -121,7 +121,7 @@ the GitHub web UI.
 It is a pull-request repository: work happens on a branch and lands through a pull
 request.
 
-### Deviations from the shared workflow
+### Deviations From the Shared Workflow
 
 - No releases, so no tags and no milestones: `copier update` takes a project to the
   template's latest `main`.
