@@ -35,6 +35,16 @@ uncommitted changes included.
   an accepted ADR: a changed decision gets a new one that supersedes it
 - Workarounds that are knowingly less than ideal carry a `KLUDGE:` comment stating
   what is wrong and what removes it
+- In a `.jinja` file, wrap every `{{ … }}` Jinja must not render in
+  `{% raw %}…{% endraw %}`: GitHub Actions expressions (`${{ github.job }}`) and
+  just's own interpolation (`{{ quote(just_executable()) }}`)
+- Quote template paths in shell commands: their names hold Jinja braces and spaces
+  (`template/src/{{package_name}}/{% if project_kind == 'package' %}py.typed{% endif %}`),
+  and an unquoted path stops at its first space. A file named `if` in a diff stat is
+  such a path, cut short
+- Test a package whose `package_name` differs from its `project_name`, as `just test`
+  does: a hyphenated `project_name` breaks anything that assumes the two are equal
+  (the `uv_build` module name, the wheel file name `publish.yml` checks)
 
 ## Alignment with agent-skills
 
